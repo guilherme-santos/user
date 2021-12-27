@@ -67,7 +67,7 @@ func (u User) Validate() error {
 	}
 	// Only check length if password is provided (creating or updating)
 	if u.Password != "" && len(u.Password) < 6 {
-		return &ValidationError{
+		return &FieldError{
 			Err: Error{
 				Code:    "password_too_weak",
 				Message: "Provided password need to be longer the 6 chars",
@@ -79,7 +79,7 @@ func (u User) Validate() error {
 		return NewMissingFieldError("email")
 	}
 	if !strings.Contains(u.Email, "@") {
-		return &ValidationError{
+		return &FieldError{
 			Err: Error{
 				Code:    "invalid_email",
 				Message: "Provided email doesn't seems to be valid",
@@ -91,7 +91,7 @@ func (u User) Validate() error {
 		return NewMissingFieldError("country")
 	}
 	if len(u.Country) != 2 {
-		return &ValidationError{
+		return &FieldError{
 			Err: Error{
 				Code:    "invalid_country",
 				Message: "Provided country doesn't seems to be a ISO 3166-1 alpha-2",

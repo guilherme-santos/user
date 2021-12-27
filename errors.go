@@ -16,13 +16,13 @@ func (e *Error) Error() string {
 // embed Error, but we also have a .Error() method.
 type Err = Error
 
-type ValidationError struct {
+type FieldError struct {
 	Err
 	Field string `json:"field"`
 }
 
-func NewMissingFieldError(field string) *ValidationError {
-	return &ValidationError{
+func NewMissingFieldError(field string) *FieldError {
+	return &FieldError{
 		Err: Error{
 			Type:    InvalidArgument,
 			Code:    "missing_field",
@@ -32,11 +32,11 @@ func NewMissingFieldError(field string) *ValidationError {
 	}
 }
 
-func (e *ValidationError) Error() string {
+func (e *FieldError) Error() string {
 	return fmt.Sprintf("code=%s field=%s message=%s", e.Code, e.Field, e.Message)
 }
 
-func (e *ValidationError) Unwrap() error {
+func (e *FieldError) Unwrap() error {
 	return &e.Err
 }
 
