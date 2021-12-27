@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+var ErrNotFound = &Err{Type: NotFound, Code: "not_found", Message: "user not found"}
+
 //go:generate mockgen -package mock -mock_names Service=UserService -destination mock/usersvc.go github.com/guilherme-santos/user Service
 
 // Service is an interface which implements the basic functions of the service.
@@ -66,9 +68,11 @@ func (u User) Validate() error {
 	// Only check length if password is provided (creating or updating)
 	if u.Password != "" && len(u.Password) < 6 {
 		return &ValidationError{
-			Code:    "password_too_weak",
-			Field:   "password",
-			Message: "Provided password need to be longer the 6 chars",
+			Err: Error{
+				Code:    "password_too_weak",
+				Message: "Provided password need to be longer the 6 chars",
+			},
+			Field: "password",
 		}
 	}
 	if u.Email == "" {
@@ -76,9 +80,11 @@ func (u User) Validate() error {
 	}
 	if !strings.Contains(u.Email, "@") {
 		return &ValidationError{
-			Code:    "invalid_email",
-			Field:   "email",
-			Message: "Provided email doesn't seems to be valid",
+			Err: Error{
+				Code:    "invalid_email",
+				Message: "Provided email doesn't seems to be valid",
+			},
+			Field: "email",
 		}
 	}
 	if u.Country == "" {
@@ -86,9 +92,11 @@ func (u User) Validate() error {
 	}
 	if len(u.Country) != 2 {
 		return &ValidationError{
-			Code:    "invalid_country",
-			Field:   "country",
-			Message: "Provided country doesn't seems to be a ISO 3166-1 alpha-2",
+			Err: Error{
+				Code:    "invalid_country",
+				Message: "Provided country doesn't seems to be a ISO 3166-1 alpha-2",
+			},
+			Field: "country",
 		}
 	}
 	return nil
