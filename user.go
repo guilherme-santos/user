@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"strings"
+	"time"
 )
 
 var ErrNotFound = &Err{Type: NotFound, Code: "not_found", Message: "user not found"}
@@ -47,11 +48,12 @@ type User struct {
 	Nickname  string `json:"nickname"`
 	// Password keeps the plain password when creating or updating a user.
 	// Important: It will never be returned to the clients.
-	Password  string  `json:"password,omitempty"`
-	Email     string  `json:"email"`
-	Country   string  `json:"country"`
-	CreatedAt string  `json:"created_at"`
-	UpdatedBy *string `json:"updated_by"`
+	Password  string     `json:"password,omitempty"`
+	Email     string     `json:"email"`
+	Country   string     `json:"country"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at"`
+	RemovedAt *time.Time `json:"removed_at,omitempty"`
 }
 
 func (u User) Validate() error {
