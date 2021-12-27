@@ -13,7 +13,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-func NewConnection(host string, port int, user, password, database string) (*sql.DB, error) {
+func NewConnection(host string, port int, user, password, database, migrationDir string) (*sql.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&multiStatements=true", user, password, host, port, database)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -35,7 +35,7 @@ func NewConnection(host string, port int, user, password, database string) (*sql
 	if err != nil {
 		return nil, err
 	}
-	m, err := migrate.NewWithDatabaseInstance("file://mysql/migrations", "mysql", driver)
+	m, err := migrate.NewWithDatabaseInstance("file://"+migrationDir, "mysql", driver)
 	if err != nil {
 		return nil, err
 	}
