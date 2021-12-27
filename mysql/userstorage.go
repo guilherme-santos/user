@@ -9,6 +9,7 @@ import (
 	"github.com/guilherme-santos/user"
 
 	"github.com/rs/xid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserStorage struct {
@@ -21,25 +22,31 @@ func NewUserStorage(db *sql.DB) *UserStorage {
 	}
 }
 
-// TODO: implement
-func hashPassword(p string) string {
-	return p
-}
-
 func (s UserStorage) Create(ctx context.Context, u *user.User) error {
 	id := xid.New().String()
+	passwd, err := hashPassword(u.Password)
+	if err != nil {
+		return &user.FieldError{
+			Err: user.Error{
+				Type:    user.InvalidArgument,
+				Code:    "invalid_password",
+				Message: err.Error(),
+			},
+			Field: "password",
+		}
+	}
 
 	query := `
 		INSERT INTO user
 			(id, first_name, last_name, nickname, password, email, country)
 		VALUES (?, ?, ?, ?, ?, ?, ?)
 	`
-	_, err := s.db.ExecContext(ctx, query,
+	_, err = s.db.ExecContext(ctx, query,
 		id,
 		u.FirstName,
 		u.LastName,
 		u.Nickname,
-		hashPassword(u.Password),
+		passwd,
 		u.Email,
 		u.Country,
 	)
@@ -79,7 +86,18 @@ func (s UserStorage) Update(ctx context.Context, u *user.User) error {
 	}
 	if u.Password != "" {
 		query += ", password = ?"
-		args = append(args, hashPassword(u.Password))
+		passwd, err := hashPassword(u.Password)
+		if err != nil {
+			return &user.FieldError{
+				Err: user.Error{
+					Type:    user.InvalidArgument,
+					Code:    "invalid_password",
+					Message: err.Error(),
+				},
+				Field: "password",
+			}
+		}
+		args = append(args, passwd)
 	}
 	query += " WHERE id = ?"
 	args = append(args, u.ID)
@@ -212,4 +230,10 @@ func scanUser(row rowScanner) (*user.User, error) {
 		return nil, err
 	}
 	return u, nil
+}
+
+// hashPassword returns a hashed version from the password
+func hashPassword(p string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(p), 14)
+	return string(bytes), err
 }
