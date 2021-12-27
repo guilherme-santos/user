@@ -37,7 +37,7 @@ The json format accept is:
     "first_name": "Guilherme",
     "last_name": "S.",
     "nickname": "xguiga",
-    "email": "xguiga+1@gmail.com",
+    "email": "email@gmail.com",
     "country": "DE"
 }
 ```
