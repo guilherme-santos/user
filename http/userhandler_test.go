@@ -26,7 +26,7 @@ func TestUserHandlerCreate(t *testing.T) {
 	json.NewEncoder(reqBody).Encode(u)
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPost, "/v1/users", reqBody)
+	req, _ := http.NewRequest(http.MethodPost, "/users", reqBody)
 
 	// Creates the user
 	svc := mock.NewUserService(ctrl)
@@ -38,78 +38,13 @@ func TestUserHandlerCreate(t *testing.T) {
 		})
 	svc.EXPECT().Get(gomock.Any(), "uuid").Return(u, nil)
 
-	h := uhttp.NewUserHandler(svc)
-	h.Create(w, req)
+	r := uhttp.NewRouter()
+	uhttp.NewUserHandler(r, svc)
+	r.ServeHTTP(w, req)
 
 	userJSON, _ := json.Marshal(u)
 
 	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.JSONEq(t, string(userJSON), w.Body.String())
-}
-
-func TestUserHandlerUpdate(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	u := newUser()
-	u.ID = "uuid"
-	reqBody := new(bytes.Buffer)
-	json.NewEncoder(reqBody).Encode(u)
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodPut, "/v1/users/uuid", reqBody)
-
-	// Updates the user
-	svc := mock.NewUserService(ctrl)
-	svc.EXPECT().Update(gomock.Any(), u).Return(nil)
-	svc.EXPECT().Get(gomock.Any(), "uuid").Return(u, nil)
-
-	h := uhttp.NewUserHandler(svc)
-	h.Update(w, req)
-
-	userJSON, _ := json.Marshal(u)
-
-	assert.Equal(t, http.StatusOK, w.Code)
-	assert.JSONEq(t, string(userJSON), w.Body.String())
-}
-
-func TestUserHandlerDelete(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodDelete, "/v1/users/uuid", nil)
-
-	// Deletes the user
-	svc := mock.NewUserService(ctrl)
-	svc.EXPECT().Delete(gomock.Any(), "uuid").Return(nil)
-
-	h := uhttp.NewUserHandler(svc)
-	h.Delete(w, req)
-
-	assert.Equal(t, http.StatusNoContent, w.Code)
-}
-
-func TestUserHandlerGet(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	u := newUser()
-	u.ID = "uuid"
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/v1/users/uuid", nil)
-
-	// Retrieves the user
-	svc := mock.NewUserService(ctrl)
-	svc.EXPECT().Get(gomock.Any(), "uuid").Return(u, nil)
-
-	h := uhttp.NewUserHandler(svc)
-	h.Get(w, req)
-
-	userJSON, _ := json.Marshal(u)
-
-	assert.Equal(t, http.StatusOK, w.Code)
 	assert.JSONEq(t, string(userJSON), w.Body.String())
 }
 
@@ -134,7 +69,7 @@ func TestUserHandlerList(t *testing.T) {
 	query.Set("per_page", "50")
 	query.Set("page", "2")
 
-	req, _ := http.NewRequest(http.MethodGet, "/v1/users?"+query.Encode(), nil)
+	req, _ := http.NewRequest(http.MethodGet, "/users?"+query.Encode(), nil)
 
 	resp := &user.ListResponse{
 		Total:      3,
@@ -155,13 +90,83 @@ func TestUserHandlerList(t *testing.T) {
 		}).
 		Return(resp, nil)
 
-	h := uhttp.NewUserHandler(svc)
-	h.List(w, req)
+	r := uhttp.NewRouter()
+	uhttp.NewUserHandler(r, svc)
+	r.ServeHTTP(w, req)
 
 	respJSON, _ := json.Marshal(resp)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.JSONEq(t, string(respJSON), w.Body.String())
+}
+
+func TestUserHandlerGet(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	u := newUser()
+	u.ID = "uuid"
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/users/uuid", nil)
+
+	// Retrieves the user
+	svc := mock.NewUserService(ctrl)
+	svc.EXPECT().Get(gomock.Any(), "uuid").Return(u, nil)
+
+	r := uhttp.NewRouter()
+	uhttp.NewUserHandler(r, svc)
+	r.ServeHTTP(w, req)
+
+	userJSON, _ := json.Marshal(u)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.JSONEq(t, string(userJSON), w.Body.String())
+}
+
+func TestUserHandlerUpdate(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	u := newUser()
+	u.ID = "uuid"
+	reqBody := new(bytes.Buffer)
+	json.NewEncoder(reqBody).Encode(u)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPut, "/users/uuid", reqBody)
+
+	// Updates the user
+	svc := mock.NewUserService(ctrl)
+	svc.EXPECT().Update(gomock.Any(), u).Return(nil)
+	svc.EXPECT().Get(gomock.Any(), "uuid").Return(u, nil)
+
+	r := uhttp.NewRouter()
+	uhttp.NewUserHandler(r, svc)
+	r.ServeHTTP(w, req)
+
+	userJSON, _ := json.Marshal(u)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.JSONEq(t, string(userJSON), w.Body.String())
+}
+
+func TestUserHandlerDelete(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodDelete, "/users/uuid", nil)
+
+	// Deletes the user
+	svc := mock.NewUserService(ctrl)
+	svc.EXPECT().Delete(gomock.Any(), "uuid").Return(nil)
+
+	r := uhttp.NewRouter()
+	uhttp.NewUserHandler(r, svc)
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusNoContent, w.Code)
 }
 
 func newUser() *user.User {
