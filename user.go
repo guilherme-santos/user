@@ -111,6 +111,12 @@ type ListOptions struct {
 	Cursor  string
 }
 
+func NewListOptions() *ListOptions {
+	return &ListOptions{
+		PerPage: 10,
+	}
+}
+
 // ListResponse contains the list of users returned by List method.
 type ListResponse struct {
 	Total      int64   `json:"total"`

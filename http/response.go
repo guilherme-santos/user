@@ -10,9 +10,29 @@ import (
 
 var JSONContentType = "application/json; charset=UTF-8"
 
-func respondWithError(w http.ResponseWriter, err error) {
-	w.Header().Set("Content-Type", JSONContentType)
+func respond(w http.ResponseWriter, status int, body interface{}) {
+	if body != nil {
+		w.Header().Set("Content-Type", JSONContentType)
+	}
+	w.WriteHeader(status)
+	if body != nil {
+		json.NewEncoder(w).Encode(body)
+	}
+}
 
+func respondOK(w http.ResponseWriter, body interface{}) {
+	respond(w, http.StatusOK, body)
+}
+
+func respondCreated(w http.ResponseWriter, body interface{}) {
+	respond(w, http.StatusCreated, body)
+}
+
+func respondNoContent(w http.ResponseWriter) {
+	respond(w, http.StatusNoContent, nil)
+}
+
+func respondWithError(w http.ResponseWriter, err error) {
 	var uerr *user.Error
 	if !errors.As(err, &uerr) {
 		uerr = &user.Error{
@@ -34,6 +54,13 @@ func respondWithError(w http.ResponseWriter, err error) {
 		status = http.StatusInternalServerError
 	}
 
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(err)
+	respond(w, status, err)
+}
+
+func newJSONDecodeError(err error) *user.Error {
+	return &user.Error{
+		Type:    user.InvalidArgument,
+		Code:    "invalid_json",
+		Message: err.Error(),
+	}
 }

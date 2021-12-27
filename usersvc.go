@@ -67,7 +67,7 @@ func (s ServiceImpl) Get(ctx context.Context, id string) (*User, error) {
 // List retrieves a list of user using the criteria provided on opts.
 func (s ServiceImpl) List(ctx context.Context, opts *ListOptions) (*ListResponse, error) {
 	if opts == nil {
-		opts = new(ListOptions)
+		opts = NewListOptions()
 	}
 	return s.storage.List(ctx, opts)
 }

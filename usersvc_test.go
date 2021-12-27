@@ -108,7 +108,7 @@ func TestUserServiceList(t *testing.T) {
 	// Get and deletes the user in the storage
 	storage := mock.NewUserStorage(ctrl)
 	storage.EXPECT().
-		List(gomock.Any(), &user.ListOptions{}).
+		List(gomock.Any(), &user.ListOptions{PerPage: 10}).
 		Return(&user.ListResponse{
 			Total:   2,
 			PerPage: 10,
