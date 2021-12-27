@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+//go:generate mockgen -package mock -mock_names Service=UserService -destination mock/usersvc.go github.com/guilherme-santos/user Service
+
 // Service is an interface which implements the basic functions of the service.
 type Service interface {
 	// Create creates a new user.
@@ -19,9 +21,13 @@ type Service interface {
 	List(context.Context, *ListOptions) (*ListResponse, error)
 }
 
+//go:generate mockgen -package mock -mock_names Storage=UserStorage -destination mock/userstorage.go github.com/guilherme-santos/user Storage
+
 // Storage is an interface which implements the storage for the service.
 // In this case all methods are the same provided by Service interface.
 type Storage Service
+
+//go:generate mockgen -package mock -mock_names EventService=EventService -destination mock/eventsvc.go github.com/guilherme-santos/user EventService
 
 // EventService is an interface which implements publishing events for outside of the
 // service.

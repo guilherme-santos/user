@@ -9,3 +9,4 @@
 4. I've created a dummy publisher just to make it clear where I would have implemented.
 5. The cursor implementation can be used only to move forward in the list sorted by id, it'll be useful for infinite scroll.
 6. I'm using `github.com/rs/xid` to generate the ids which uses the Mongo Object ID algorithm. Main reason here is that I can sort by id and the result will be order of creation as it has a timestamp component.
+7. I'm using `https://github.com/golang/mock` mock generation.
