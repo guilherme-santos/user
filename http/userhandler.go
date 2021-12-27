@@ -84,6 +84,14 @@ func (h UserHandler) Get(w http.ResponseWriter, req *http.Request) {
 		respondWithError(w, err)
 		return
 	}
+
+	// I'd like to add some caching properties here, like the following
+	// w.Header().Set("Cache-Control", "private, no-cache") // no-cache force the revalidation before use it
+	// w.Header().Set("ETag", userEtag)
+
+	// We could check If-None-Match and return the user only if changed
+	// otherwise http.StatusNotModified
+
 	respondOK(w, u)
 }
 

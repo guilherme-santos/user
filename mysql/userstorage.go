@@ -21,6 +21,7 @@ func NewUserStorage(db *sql.DB) *UserStorage {
 	}
 }
 
+// TODO: implement
 func hashPassword(p string) string {
 	return p
 }
@@ -102,6 +103,9 @@ func (s UserStorage) Update(ctx context.Context, u *user.User) error {
 func (s UserStorage) Delete(ctx context.Context, id string) error {
 	query := `UPDATE user SET removed_at = NOW() WHERE id = ? AND removed_at IS NULL`
 	res, err := s.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return err
+	}
 	n, err := res.RowsAffected()
 	if err != nil {
 		return err
@@ -143,7 +147,7 @@ func (s UserStorage) List(ctx context.Context, opts *user.ListOptions) (*user.Li
 		args = append(args, opts.Country)
 	}
 	if opts.Cursor != "" {
-
+		// TODO: implement cursor based
 	}
 	query += " WHERE " + strings.Join(where, " AND ")
 	if opts.Sort != "" {
@@ -177,6 +181,8 @@ func (s UserStorage) List(ctx context.Context, opts *user.ListOptions) (*user.Li
 		}
 		users = append(users, u)
 	}
+
+	// TODO: get total of users using COUNT(*) from the SELECT
 
 	return &user.ListResponse{
 		Total:   int64(len(users)),

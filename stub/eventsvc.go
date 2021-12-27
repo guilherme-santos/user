@@ -16,16 +16,19 @@ func NewEventService() *EventService {
 
 func (s EventService) UserCreated(ctx context.Context, u *user.User) error {
 	s.log(ctx, "user.created", u)
+	// TODO: publish event
 	return nil
 }
 
 func (s EventService) UserUpdated(ctx context.Context, u *user.User) error {
 	s.log(ctx, "user.updated", u)
+	// TODO: publish event
 	return nil
 }
 
 func (s EventService) UserDeleted(ctx context.Context, u *user.User) error {
 	s.log(ctx, "user.deleted", u)
+	// TODO: publish event
 	return nil
 }
 
