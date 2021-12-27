@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  user:
+    build:
+      target: builder
+    init: true
+    # This is useful to run the container and develop inside of it
+    # using make run/test, etc.
+    command: sh -c "tail -f /dev/null"
+    volumes:
+      - .:/go/src/github.com/guilherme-santos/user

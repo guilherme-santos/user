@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  user:
+    image: xguiga/faceituser:$version
+    build:
+      context: .
+      target: "$target"
+      cache_from:
+        - xguiga/faceituser:builder
+        - xguiga/faceituser:latest
+    environment:
+      USERSVC_LOGGER_LEVEL: debug
+      USERSVC_MYSQL_HOST: mysql
+      USERSVC_MYSQL_USER: root
+      USERSVC_MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    depends_on:
+      - mysql
+    ports:
+      - mode: host
+        target: 80
+        published: 80
+        protocol: tcp
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: user
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
