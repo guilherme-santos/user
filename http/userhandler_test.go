@@ -38,7 +38,7 @@ func TestUserHandlerCreate(t *testing.T) {
 		})
 	svc.EXPECT().Get(gomock.Any(), "uuid").Return(u, nil)
 
-	r := uhttp.NewRouter()
+	r := uhttp.NewRouter(nil)
 	uhttp.NewUserHandler(r, svc)
 	r.ServeHTTP(w, req)
 
@@ -90,7 +90,7 @@ func TestUserHandlerList(t *testing.T) {
 		}).
 		Return(resp, nil)
 
-	r := uhttp.NewRouter()
+	r := uhttp.NewRouter(nil)
 	uhttp.NewUserHandler(r, svc)
 	r.ServeHTTP(w, req)
 
@@ -114,7 +114,7 @@ func TestUserHandlerGet(t *testing.T) {
 	svc := mock.NewUserService(ctrl)
 	svc.EXPECT().Get(gomock.Any(), "uuid").Return(u, nil)
 
-	r := uhttp.NewRouter()
+	r := uhttp.NewRouter(nil)
 	uhttp.NewUserHandler(r, svc)
 	r.ServeHTTP(w, req)
 
@@ -141,7 +141,7 @@ func TestUserHandlerUpdate(t *testing.T) {
 	svc.EXPECT().Update(gomock.Any(), u).Return(nil)
 	svc.EXPECT().Get(gomock.Any(), "uuid").Return(u, nil)
 
-	r := uhttp.NewRouter()
+	r := uhttp.NewRouter(nil)
 	uhttp.NewUserHandler(r, svc)
 	r.ServeHTTP(w, req)
 
@@ -162,7 +162,7 @@ func TestUserHandlerDelete(t *testing.T) {
 	svc := mock.NewUserService(ctrl)
 	svc.EXPECT().Delete(gomock.Any(), "uuid").Return(nil)
 
-	r := uhttp.NewRouter()
+	r := uhttp.NewRouter(nil)
 	uhttp.NewUserHandler(r, svc)
 	r.ServeHTTP(w, req)
 
